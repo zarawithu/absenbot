@@ -1,5 +1,3 @@
-Siap! Berikut contoh **README.md** yang bisa kamu pakai untuk project **absenbot** di GitHub:
-
 ````markdown
 # AbsenBot
 
