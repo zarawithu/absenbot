@@ -84,8 +84,3 @@ MIT License © 2025 Davin Maritza Alfarrezal
 ---
 
 Jika ada pertanyaan atau ingin kontribusi, silakan buat issue atau pull request.
-
-```
-
-Kalau mau aku bantu buatin versi lebih lengkap atau bahasa Inggris juga?
-```
