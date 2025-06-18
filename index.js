@@ -93,14 +93,28 @@ async function startSocket() {
     const sock = makeWASocket({ auth: state, version, logger: P({ level: 'silent' }) })
 
     sock.ev.on('creds.update', saveCreds)
-    sock.ev.on('connection.update', ({ connection, lastDisconnect, qr }) => {
-      if (qr) qrcodeTerminal.generate(qr, { small: true })
-      if (connection === 'open') console.log('✅ Bot aktif.')
+    sock.ev.on('connection.update', (update) => {
+      const { connection, lastDisconnect, qr } = update
+      if (qr) {
+        console.log('📱 QR code diterima, silakan scan:')
+        qrcodeTerminal.generate(qr, { small: true })
+      }
+      if (connection === 'open') {
+        console.log('✅ WhatsApp siap digunakan!')
+      }
       if (connection === 'close') {
-        const code = lastDisconnect?.error?.output?.statusCode
-        if (code !== DisconnectReason.loggedOut) {
-          console.log('🔄 Reconnecting...')
-          setTimeout(() => { isConnecting = false; startSocket() }, 3000)
+        const statusCode = lastDisconnect?.error?.output?.statusCode
+        const reason = lastDisconnect?.error?.message || 'Unknown'
+        console.log(`❌ Koneksi terputus, statusCode: ${statusCode}, alasan: ${reason}`)
+        if (statusCode === DisconnectReason.loggedOut) {
+          console.log('⚠️ Sudah logout, perlu scan ulang QR code.')
+          isConnecting = false
+        } else {
+          console.log('🔄 Mencoba reconnect...')
+          setTimeout(() => {
+            isConnecting = false
+            startSocket()
+          }, 3000)
         }
       }
     })
@@ -201,7 +215,7 @@ async function startSocket() {
           return send('❌ Gagal membaca data absensi.')
         }
         if (db.length === 0) return send('📋 Tidak ada data absensi.')
-        const list = db.slice(-10).map((d, i) => 
+        const list = db.slice(-10).map((d, i) =>
           `${i + 1}. ${d.nama} (${d.kelas})\n📆 ${d.waktu}\n📤 ${d.sender}`
         ).join('\n\n')
         return send(`📋 *10 Absensi Terakhir:*\n\n${list}`)
@@ -221,25 +235,30 @@ async function startSocket() {
       }
 
       if (type === 'imageMessage') {
-        const buffer = await downloadMediaMessage(m, 'buffer', {}, { logger: P({ level: 'silent' }) })
-        const image = await Jimp.read(buffer)
-        image.resize(300, 300)
-        const qr = new QrCode()
-        qr.callback = (err, v) => {
-          if (err || !v?.result) return send('❌ QR gagal dibaca.')
-          const [nama, kelas, tanggal] = v.result.split('|')
-          if (!nama || !kelas || !tanggal) return send('❌ Format QR salah.')
-          const waktu = new Date().toISOString()
-          let db = []
-          try {
-            db = JSON.parse(fs.readFileSync(DB))
-            if (!Array.isArray(db)) throw new Error()
-          } catch { db = [] }
-          db.push({ nama, kelas, waktu, sender: from })
-          fs.writeFileSync(DB, JSON.stringify(db, null, 2))
-          send(`✅ Absensi *${nama} (${kelas})* pada ${tanggal} dicatat.`)
+        try {
+          const buffer = await downloadMediaMessage(m, 'buffer', {}, { logger: P({ level: 'silent' }) })
+          const image = await Jimp.read(buffer)
+          image.resize(300, 300)
+          const qr = new QrCode()
+          qr.callback = (err, v) => {
+            if (err || !v?.result) return send('❌ QR gagal dibaca.')
+            const [nama, kelas, tanggal] = v.result.split('|')
+            if (!nama || !kelas || !tanggal) return send('❌ Format QR salah.')
+            const waktu = new Date().toISOString()
+            let db = []
+            try {
+              db = JSON.parse(fs.readFileSync(DB))
+              if (!Array.isArray(db)) throw new Error()
+            } catch { db = [] }
+            db.push({ nama, kelas, waktu, sender: from })
+            fs.writeFileSync(DB, JSON.stringify(db, null, 2))
+            send(`✅ Absensi *${nama} (${kelas})* pada ${tanggal} dicatat.`)
+          }
+          qr.decode(image.bitmap)
+        } catch (e) {
+          console.error('Error decoding QR image:', e)
+          send('❌ Gagal memproses gambar QR.')
         }
-        qr.decode(image.bitmap)
       }
     })
   } catch (err) {
