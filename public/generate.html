@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Absensi Sekolah</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
+</head>
+<body>
+  <main>
+    <h2>📸 Generate QR Absensi</h2>
+    <button class="toggle-mode" onclick="toggleTheme()">🌗 Ganti Mode</button>
+
+    <input id="nama" placeholder="Nama siswa (contoh: Ridho)" />
+    <input id="kelas" placeholder="Kelas (contoh: 7A)" />
+    <div class="button-group">
+      <button onclick="buatQR()">🎯 Generate QR</button>
+      <button onclick="downloadQR()">📥 Download</button>
+      <button onclick="kirimWA()">📩 Kirim ke Bot WA</button>
+    </div>
+
+    <div id="qrbox">
+      <canvas id="qrcanvas" width="220" height="220"></canvas>
+      <p id="tgl"></p>
+    </div>
+  </main>
+  <footer>© 2025 Davin Maritza</footer>
+
+  <script>
+    let hasil = ""
+    function buatQR() {
+      const nama = document.getElementById("nama").value.trim()
+      const kelas = document.getElementById("kelas").value.trim()
+      const today = new Date().toISOString().split("T")[0]
+      const cacheKey = `${nama}|${kelas}|${today}`
+      if (!nama || !kelas) return alert("Lengkapi nama dan kelas!")
+      hasil = cacheKey
+      localStorage.setItem("qr_today", cacheKey)
+      QRCode.toCanvas(document.getElementById("qrcanvas"), hasil, { width: 220 }, err => {
+        if (err) return alert("❌ Gagal membuat QR")
+        document.getElementById("qrbox").classList.add("show")
+        document.getElementById("tgl").innerText = "QR dibuat untuk tanggal " + today
+      })
+    }
+    function downloadQR() {
+      if (!hasil) return alert("QR belum dibuat.")
+      const canvas = document.getElementById("qrcanvas")
+      const link = document.createElement("a")
+      link.download = `${hasil}.png`
+      link.href = canvas.toDataURL()
+      link.click()
+    }
+    function kirimWA() {
+      if (!hasil) return alert("QR belum dibuat.")
+      const nomor = "601156897940"
+      const pesan = `Halo bot, ini QR saya:\n${hasil}`
+      window.open(`https://wa.me/${nomor}?text=${encodeURIComponent(pesan)}`, "_blank")
+    }
+    function toggleTheme() {
+      const html = document.documentElement
+      const next = html.getAttribute("data-theme") === "dark" ? "light" : "dark"
+      html.setAttribute("data-theme", next)
+      localStorage.setItem("theme", next)
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      const saved = localStorage.getItem("theme") || "light"
+      document.documentElement.setAttribute("data-theme", saved)
+    })
+  </script>
+</body>
+</html>

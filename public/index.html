@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bot QR Absensi</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main>
+    <h1>📱 Bot QR Absensi</h1>
+    <p>Bot WhatsApp aktif menerima absensi QR dari siswa.</p>
+    <div class="button-group">
+      <a class="btn" href="/generate.html">🧾 Buat QR Absen</a>
+      <a class="btn" href="/absensi">📊 Lihat Rekap Absensi</a>
+      <a class="btn" href="https://wa.me/601156897940">📩 Kirim ke Bot WA</a>
+    </div>
+    <button class="toggle-mode" onclick="toggleTheme()">🌗 Ganti Mode</button>
+  </main>
+  <footer>© 2025 Davin Maritza</footer>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement
+      const next = html.getAttribute("data-theme") === "dark" ? "light" : "dark"
+      html.setAttribute("data-theme", next)
+      localStorage.setItem("theme", next)
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      const saved = localStorage.getItem("theme") || "light"
+      document.documentElement.setAttribute("data-theme", saved)
+    })
+  </script>
+</body>
+</html>

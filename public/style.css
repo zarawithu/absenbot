@@ -1,0 +1,92 @@
+:root {
+  --bg: #f9f9f9;
+  --text: #333;
+  --accent: #2e7d32;
+  --accent-dark: #1b5e20;
+  --card: #fff;
+}
+[data-theme="dark"] {
+  --bg: #1e1e1e;
+  --text: #eee;
+  --accent: #66bb6a;
+  --accent-dark: #388e3c;
+  --card: #2c2c2c;
+}
+* {
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", sans-serif;
+  margin: 0;
+  padding: 40px 20px;
+  animation: fadeIn 0.8s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+main {
+  max-width: 500px;
+  margin: auto;
+  text-align: center;
+}
+h1, h2 {
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+input {
+  padding: 12px;
+  margin: 8px 0;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text);
+}
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.btn, button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  text-decoration: none;
+}
+button:hover, .btn:hover {
+  background: var(--accent-dark);
+}
+#qrbox {
+  margin-top: 20px;
+  display: none;
+}
+#qrbox.show {
+  display: block;
+}
+canvas {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+}
+.toggle-mode {
+  margin-top: 20px;
+  background: none;
+  border: none;
+  color: var(--accent);
+  text-decoration: underline;
+  cursor: pointer;
+}
+footer {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 14px;
+  color: #888;
+}
