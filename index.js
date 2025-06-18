@@ -118,9 +118,10 @@ async function startSocket() {
       const send = text => sock.sendMessage(sender, { text })
 
       if (body.startsWith('.menu')) {
-        return send(`📖 *MENU ADMIN*\n\n🛠 *Bot Control:*\n• .restart\n• .rekap\n• .info\n• .broadcast <pesan>\n• .self / .public\n\n👥 *Admin & Owner:*\n• .addadmin 628xxxx\n• .deladmin 628xxxx\n• .addowner 628xxxx\n• .delowner 628xxxx\n\n👨‍🏫 *Data:*\n• .addsiswa Nama|Kelas\n• .addguru Nama|Mapel`)
+        return send(`📖 *MENU ADMIN*\n\n🛠 *Bot Control:*\n• .restart\n• .rekap\n• .info\n• .broadcast <pesan>\n• .self / .public\n\n👥 *Admin & Owner:*\n• .addadmin 628xxxx\n• .deladmin 628xxxx\n• .addowner 628xxxx\n• .delowner 628xxxx\n\n👨‍🏫 *Data:*\n• .addsiswa Nama|Kelas\n• .addguru Nama|Mapel\n• .listabsen\n• .listsiswa`)
       }
 
+      // === Admin/Owner Commands
       if (body.startsWith('.addadmin') && isOwner(from)) {
         const num = body.split(' ')[1]
         if (!num) return send('❌ Masukkan nomor admin!')
@@ -189,6 +190,34 @@ async function startSocket() {
 
       if (body === '.info') {
         return send(`🤖 Bot aktif\nMode: *${getMode()}*\nAdmin: ${JSON.parse(fs.readFileSync(ADMIN)).length}`)
+      }
+
+      if (body === '.listabsen' && isAdminOrOwner(from)) {
+        let db = []
+        try {
+          db = JSON.parse(fs.readFileSync(DB))
+          if (!Array.isArray(db)) throw new Error()
+        } catch {
+          return send('❌ Gagal membaca data absensi.')
+        }
+        if (db.length === 0) return send('📋 Tidak ada data absensi.')
+        const list = db.slice(-10).map((d, i) => 
+          `${i + 1}. ${d.nama} (${d.kelas})\n📆 ${d.waktu}\n📤 ${d.sender}`
+        ).join('\n\n')
+        return send(`📋 *10 Absensi Terakhir:*\n\n${list}`)
+      }
+
+      if (body === '.listsiswa' && isAdminOrOwner(from)) {
+        let siswa = []
+        try {
+          siswa = JSON.parse(fs.readFileSync(SISWA))
+          if (!Array.isArray(siswa)) throw new Error()
+        } catch {
+          return send('❌ Gagal membaca data siswa.')
+        }
+        if (siswa.length === 0) return send('👨‍🎓 Tidak ada data siswa.')
+        const list = siswa.map((s, i) => `${i + 1}. ${s.nama} (${s.kelas})`).join('\n')
+        return send(`👨‍🎓 *Daftar Siswa:*\n\n${list}`)
       }
 
       if (type === 'imageMessage') {
