@@ -79,7 +79,7 @@ pm2 stop whatsapp-bot
 
 ## Lisensi
 
-MIT License © 2025 Zarawithu
+MIT License © 2025 Davin Maritza Alfarrezal
 
 ---
 
