@@ -1,4 +1,4 @@
-````markdown
+[````markdown
 # AbsenBot
 
 AbsenBot adalah aplikasi WhatsApp bot untuk membantu proses absen dan manajemen kehadiran secara otomatis.
@@ -82,3 +82,4 @@ MIT License © 2025 Davin Maritza Alfarrezal
 ---
 
 Jika ada pertanyaan atau ingin kontribusi, silakan buat issue atau pull request.
+](https://github.com/zarawithu/absenbo)
